@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car어드바이저 — 중고차 구매·매각 컨설팅</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Noto+Sans+KR:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ══ TOKENS ══ */
+:root {
+  --ink:    #0D1F38;
+  --ink2:   #1A3050;
+  --ink3:   #243D5C;
+  --gold:   #B8923E;
+  --gold2:  #CFA855;
+  --gold3:  #E8C878;
+  --cream:  #F9F6F0;
+  --warm:   #F2EDE3;
+  --white:  #FFFFFF;
+  --text:   #1E1E1E;
+  --mid:    #4A4A4A;
+  --soft:   #767676;
+  --line:   #E0DAD0;
+  --line2:  #D0C8BA;
+  --teal:   #267060;
+  --teal2:  #339080;
+  --tealp:  #E2F0ED;
+  --red:    #B83030;
+  --ff-serif: 'Cormorant Garamond','Noto Sans KR',serif;
+  --ff-sans:  'Noto Sans KR',sans-serif;
+  --ff-mono:  'DM Mono',monospace;
+  --shadow-sm: 0 2px 12px rgba(0,0,0,.05);
+  --shadow-md: 0 6px 28px rgba(0,0,0,.09);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,.13);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+body{font-family:var(--ff-sans);color:var(--text);background:#fff;overflow-x:hidden;line-height:1.7}
+a{text-decoration:none;color:inherit}
+button{font-family:var(--ff-sans);cursor:pointer;border:none;outline:none}
+
+/* ════ NAV ════ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:999;
+  height:64px;padding:0 5%;
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(13,31,56,.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(184,146,62,.15);
+  transition:box-shadow .3s;
+}
+nav.scrolled{box-shadow:0 4px 28px rgba(0,0,0,.22)}
+.nav-logo{display:flex;align-items:center;gap:11px}
+/* 브랜드: Car만 골드, 어드바이저는 흰색 동일색 */
+.nav-brand{font-family:var(--ff-serif);font-size:20px;font-weight:600;letter-spacing:.01em}
+.nav-brand .car{color:var(--gold2)}
+.nav-brand .rest{color:#fff}
+.nav-sep{width:1px;height:16px;background:rgba(255,255,255,.1);margin:0 4px}
+.nav-sub{font-size:11px;color:rgba(255,255,255,.3);font-weight:300;letter-spacing:.07em}
+.nav-right{display:flex;align-items:center;gap:22px}
+.nav-links{display:flex;gap:22px}
+.nav-links a{font-size:13px;color:rgba(255,255,255,.5);transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-tel{font-family:var(--ff-mono);font-size:12px;color:rgba(255,255,255,.35)}
+.nav-cta{
+  background:var(--gold);color:var(--ink);
+  padding:9px 20px;border-radius:7px;
+  font-size:13px;font-weight:700;transition:all .2s;
+}
+.nav-cta:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(184,146,62,.4)}
+
+/* ════ HERO ════ */
+.hero{
+  min-height:100vh;background:var(--ink);
+  display:flex;align-items:center;
+  padding:100px 5% 80px;position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 55% at 75% 45%, rgba(184,146,62,.08) 0%,transparent 60%),
+    radial-gradient(ellipse 45% 55% at 15% 75%, rgba(38,112,96,.07) 0%,transparent 55%);
+}
+.hero-grid{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.022) 1px,transparent 1px);
+  background-size:68px 68px;
+}
+.hero-inner{position:relative;z-index:2;max-width:1120px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 380px;gap:64px;align-items:center}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  background:rgba(184,146,62,.1);border:1px solid rgba(184,146,62,.28);
+  border-radius:30px;padding:5px 14px;margin-bottom:26px;
+}
+.hero-dot{width:5px;height:5px;background:var(--gold);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-eyebrow span{font-size:11px;font-weight:500;color:var(--gold2);letter-spacing:.1em}
+.hero h1{
+  font-family:var(--ff-serif);
+  font-size:clamp(32px,4.2vw,54px);font-weight:600;
+  color:#fff;line-height:1.15;letter-spacing:-.01em;
+  margin-bottom:18px;word-break:keep-all;
+}
+.hero h1 em{color:var(--gold2);font-style:italic}
+.hero-sub{
+  font-size:clamp(14.5px,1.35vw,17px);font-weight:300;
+  color:rgba(255,255,255,.52);line-height:1.9;
+  margin-bottom:40px;word-break:keep-all;
+}
+.hero-sub strong{color:rgba(255,255,255,.85);font-weight:500}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+.btn-gold{
+  display:inline-flex;align-items:center;gap:9px;
+  background:var(--gold);color:var(--ink);
+  padding:14px 26px;border-radius:8px;
+  font-size:14.5px;font-weight:700;transition:all .25s;
+}
+.btn-gold:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 8px 26px rgba(184,146,62,.42)}
+.btn-outline{
+  display:inline-flex;align-items:center;gap:9px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);
+  color:rgba(255,255,255,.78);
+  padding:14px 26px;border-radius:8px;
+  font-size:14.5px;font-weight:500;transition:all .25s;
+}
+.btn-outline:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.32)}
+.hero-stats{
+  display:flex;gap:32px;padding-top:34px;
+  border-top:1px solid rgba(255,255,255,.07);flex-wrap:wrap;
+}
+.hs-num{font-family:var(--ff-serif);font-size:28px;font-weight:600;color:var(--gold2);line-height:1}
+.hs-label{font-size:11px;color:rgba(255,255,255,.32);margin-top:4px;letter-spacing:.04em}
+
+/* Hero 오른쪽 카드 */
+.hero-cards{display:flex;flex-direction:column;gap:14px}
+.hc{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);
+  border-radius:12px;padding:20px 22px;backdrop-filter:blur(18px);
+  transition:all .3s;
+}
+.hc:hover{background:rgba(255,255,255,.08);border-color:rgba(184,146,62,.3)}
+.hc-tag{font-size:9.5px;font-weight:700;color:var(--gold2);letter-spacing:.14em;margin-bottom:7px}
+.hc-title{font-size:14px;font-weight:700;color:#fff;margin-bottom:5px}
+.hc-price{font-family:var(--ff-serif);font-size:28px;color:var(--gold2);margin:4px 0 2px;line-height:1}
+.hc-note{font-size:10.5px;color:rgba(255,255,255,.3);line-height:1.5}
+.hc-badge{
+  display:inline-block;background:rgba(38,112,96,.25);border:1px solid rgba(38,112,96,.4);
+  color:#7DCEBC;font-size:9.5px;font-weight:700;padding:2px 9px;border-radius:10px;
+  letter-spacing:.05em;margin-top:7px;
+}
+
+/* ════ SECTION COMMON ════ */
+/* 섹션 배경: 밝게 유지 → 가독성 최우선 */
+.sec{padding:88px 5%}
+.sec-inner{max-width:1120px;margin:0 auto}
+.sec-lbl{
+  display:flex;align-items:center;gap:9px;
+  font-size:10px;font-weight:700;letter-spacing:.2em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:9px;
+}
+.sec-lbl::before{content:'';width:22px;height:1.5px;background:var(--gold);flex-shrink:0}
+.sec-h{
+  font-family:var(--ff-serif);
+  font-size:clamp(25px,2.7vw,36px);font-weight:600;
+  color:var(--ink);line-height:1.2;letter-spacing:-.02em;
+  margin-bottom:12px;word-break:keep-all;
+}
+.sec-h em{color:var(--gold);font-style:italic}
+.sec-p{font-size:15px;color:var(--soft);line-height:1.9;max-width:560px;word-break:keep-all}
+
+/* ════ SERVICES ════ — 밝은 배경 */
+.services{background:var(--cream)}
+.svc-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:48px}
+.svc-card{
+  background:#fff;border:1.5px solid var(--line);
+  border-radius:12px;padding:36px 30px;
+  position:relative;overflow:hidden;transition:all .3s;
+}
+.svc-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px);border-color:var(--line2)}
+.svc-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--gold);transform:scaleX(0);transition:transform .35s;transform-origin:left;
+}
+.svc-card:hover::before{transform:scaleX(1)}
+.svc-card.v2::before{background:var(--teal)}
+.svc-num{font-family:var(--ff-mono);font-size:10.5px;color:var(--gold);font-weight:500;letter-spacing:.1em;margin-bottom:14px}
+.svc-card.v2 .svc-num{color:var(--teal)}
+.svc-icon{font-size:34px;margin-bottom:14px}
+.svc-card h3{font-size:19px;font-weight:700;color:var(--ink);margin-bottom:9px}
+.svc-card p{font-size:13.5px;color:var(--mid);line-height:1.85;margin-bottom:18px;word-break:keep-all}
+.svc-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.svc-list li{display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--mid);line-height:1.65}
+.svc-list li::before{
+  content:'✓';font-size:8.5px;font-weight:700;color:var(--teal);
+  width:17px;height:17px;background:var(--tealp);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;margin-top:2px;
+}
+.svc-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--ink);color:#fff;
+  padding:11px 22px;border-radius:8px;
+  font-size:13px;font-weight:700;transition:all .2s;
+}
+.svc-btn:hover{background:var(--ink2);transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.svc-btn.teal{background:var(--teal)}
+.svc-btn.teal:hover{background:var(--teal2)}
+.svc-badge{
+  position:absolute;top:20px;right:20px;
+  background:var(--ink);color:var(--gold2);
+  font-size:10.5px;font-weight:700;
+  padding:3px 10px;border-radius:14px;
+  font-family:var(--ff-mono);
+}
+
+/* ════ WHY ════ — 흰 배경, 진한 텍스트 */
+.why{background:#fff}
+.why-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px}
+.why-card{
+  background:var(--cream);padding:30px 24px;
+  position:relative;overflow:hidden;transition:all .3s;cursor:default;
+}
+.why-card:hover{background:#fff;box-shadow:var(--shadow-md);z-index:1;transform:translateY(-3px)}
+.why-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2.5px;background:var(--gold);transform:scaleX(0);transition:transform .35s}
+.why-card:hover::after{transform:scaleX(1)}
+.w-icon{font-size:28px;margin-bottom:14px}
+.why-card h3{font-size:15.5px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.why-card p{font-size:13px;color:var(--mid);line-height:1.85;word-break:keep-all}
+.w-tag{
+  display:inline-block;margin-top:13px;
+  font-size:10px;font-weight:700;padding:3px 9px;
+  border-radius:4px;letter-spacing:.05em;
+  background:var(--warm);color:var(--ink);border:1px solid var(--line);
+}
+.w-tag.g{background:#FBF5E6;color:#7A5A15;border-color:#E8D490}
+.w-tag.t{background:var(--tealp);color:var(--teal);border-color:#BDD8D2}
+
+/* ════ TRUST STRIP ════ */
+.trust-strip{
+  background:var(--ink);padding:28px 5%;
+}
+.trust-inner{
+  max-width:1120px;margin:0 auto;
+  display:flex;justify-content:space-around;align-items:center;flex-wrap:wrap;gap:24px;
+}
+.trust-item{text-align:center}
+.trust-n{font-family:var(--ff-serif);font-size:32px;color:var(--gold2);line-height:1;font-weight:600}
+.trust-l{font-size:11px;color:rgba(255,255,255,.38);margin-top:5px;letter-spacing:.05em}
+
+/* ════ COMPARE ════ — 살짝 어두운 배경, 텍스트는 진하게 */
+.compare{background:var(--ink2)}
+.compare .sec-lbl{color:var(--gold2)}
+.compare .sec-lbl::before{background:var(--gold2)}
+.compare .sec-h{color:#fff}
+.compare .sec-p{color:rgba(255,255,255,.48)}
+.cmp-wrap{margin-top:48px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.09)}
+.cmp{width:100%;border-collapse:collapse;font-size:13.5px}
+.cmp thead th{padding:13px 18px;font-size:11px;font-weight:700;letter-spacing:.05em}
+.cmp thead th:first-child{text-align:left;background:rgba(255,255,255,.03);color:rgba(255,255,255,.32);width:30%}
+.cmp thead th.td{background:rgba(255,255,255,.06);color:rgba(255,255,255,.52);text-align:center}
+.cmp thead th.tc{background:var(--gold);color:var(--ink);text-align:center}
+.cmp tbody td{padding:12px 18px;border-top:1px solid rgba(255,255,255,.06)}
+.cmp tbody tr:hover td{background:rgba(255,255,255,.025)}
+.cmp td:first-child{color:rgba(255,255,255,.42);font-weight:500;font-size:12.5px}
+.cmp td.dv{color:rgba(255,255,255,.38);text-align:center}
+.cmp td.cv{color:var(--gold2);font-weight:500;text-align:center;background:rgba(184,146,62,.06)}
+.cmp-note{
+  margin-top:24px;padding:18px 22px;border-radius:8px;
+  background:rgba(184,146,62,.09);border:1px solid rgba(184,146,62,.2);
+}
+/* 비교 섹션 내 텍스트 가독성: 충분히 밝게 */
+.cmp-note p{font-size:14px;color:rgba(255,255,255,.72);line-height:1.85;word-break:keep-all}
+.cmp-note strong{color:var(--gold2)}
+
+/* ════ PROCESS ════ — 크림 배경 */
+.process{background:var(--cream)}
+.proc-tabs{display:flex;gap:0;margin-top:38px;margin-bottom:0;border-bottom:1.5px solid var(--line)}
+.ptab{
+  padding:11px 24px;font-size:13.5px;font-weight:700;
+  color:var(--soft);background:transparent;border:none;
+  border-bottom:2.5px solid transparent;cursor:pointer;
+  transition:all .2s;margin-bottom:-1.5px;
+}
+.ptab.on{color:var(--ink);border-bottom-color:var(--gold)}
+.proc-content{display:none;padding-top:44px}
+.proc-content.on{display:block}
+.proc-steps{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  gap:0;position:relative;
+}
+.proc-steps::before{
+  content:'';position:absolute;top:26px;left:10%;right:10%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--line) 15%,var(--line) 85%,transparent);
+}
+.ps{text-align:center;padding:0 10px}
+.ps-circle{
+  width:52px;height:52px;border-radius:50%;margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--ff-serif);font-size:20px;font-weight:600;
+}
+.ps-circle.on{background:var(--ink);color:var(--gold2);box-shadow:0 0 0 6px rgba(13,31,56,.07)}
+.ps-circle.key{background:var(--gold);color:var(--ink)}
+.ps-circle.off{background:#fff;color:var(--line2);border:1.5px solid var(--line)}
+.ps h4{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:5px;word-break:keep-all}
+.ps p{font-size:11.5px;color:var(--soft);line-height:1.65;word-break:keep-all}
+.ps-tag{display:inline-block;margin-top:8px;font-size:9.5px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.05em}
+.ps-tag.f{background:var(--tealp);color:var(--teal)}
+.ps-tag.p{background:#ECF0F8;color:var(--ink2)}
+.ps-tag.k{background:var(--ink);color:var(--gold2)}
+
+/* ════ ACQ SECTION ════ — 흰 배경 */
+.acq{background:#fff}
+.acq-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;margin-top:48px}
+.acq-items{display:flex;flex-direction:column;gap:18px}
+.acq-item{
+  display:flex;gap:16px;align-items:flex-start;
+  padding:18px 20px;border:1.5px solid var(--line);border-radius:10px;
+  transition:all .3s;
+}
+.acq-item:hover{border-color:var(--gold);background:var(--cream);transform:translateX(4px)}
+.acq-n{font-family:var(--ff-serif);font-size:22px;font-weight:600;color:var(--gold);flex-shrink:0;line-height:1;margin-top:2px}
+.acq-item h4{font-size:14.5px;font-weight:700;color:var(--ink);margin-bottom:5px;word-break:keep-all}
+.acq-item p{font-size:13px;color:var(--mid);line-height:1.75;word-break:keep-all}
+.acq-cta{background:var(--ink);border-radius:12px;padding:32px}
+.acq-cta h3{font-family:var(--ff-serif);font-size:22px;font-weight:600;color:#fff;margin-bottom:10px;line-height:1.3;word-break:keep-all}
+.acq-cta p{font-size:13.5px;color:rgba(255,255,255,.45);margin-bottom:22px;line-height:1.8;word-break:keep-all}
+.acq-btns{display:flex;flex-direction:column;gap:10px}
+.ab-gold{display:block;background:var(--gold);color:var(--ink);padding:13px 18px;border-radius:8px;font-size:14px;font-weight:700;text-align:center;transition:all .2s}
+.ab-gold:hover{background:var(--gold2)}
+.ab-line{display:block;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);padding:12px 18px;border-radius:8px;font-size:13.5px;font-weight:500;text-align:center;transition:all .2s}
+.ab-line:hover{background:rgba(255,255,255,.12)}
+
+/* ════ CONTACT ════ */
+.contact{background:var(--ink2);position:relative;overflow:hidden}
+.contact::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 50% 60% at 85% 50%,rgba(184,146,62,.07) 0%,transparent 55%);
+  pointer-events:none;
+}
+.contact .sec-lbl{color:var(--gold2)}
+.contact .sec-lbl::before{background:var(--gold2)}
+.contact .sec-h{color:#fff}
+.contact .sec-p{color:rgba(255,255,255,.42)}
+.contact-body{position:relative;z-index:2;max-width:1120px;margin:0 auto}
+.form-tabs{display:flex;gap:0;margin:34px 0 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.ftab{
+  padding:12px 26px;font-size:14px;font-weight:700;
+  color:rgba(255,255,255,.35);background:transparent;border:none;
+  border-bottom:2.5px solid transparent;cursor:pointer;
+  transition:all .2s;margin-bottom:-1px;
+}
+.ftab.on{color:var(--gold2);border-bottom-color:var(--gold)}
+.fpanel{display:none;margin-top:34px}
+.fpanel.on{display:grid;grid-template-columns:1fr 1.2fr;gap:52px;align-items:start}
+/* form info 텍스트 충분히 밝게 */
+.fi-wrap h3{font-family:var(--ff-serif);font-size:19px;color:#fff;margin-bottom:14px;line-height:1.4;word-break:keep-all}
+.fi-list{list-style:none;display:flex;flex-direction:column;gap:13px;margin-bottom:26px}
+.fi-list li{display:flex;gap:12px;align-items:flex-start}
+.fi-ico{font-size:17px;flex-shrink:0}
+.fi-lb{font-size:10px;font-weight:700;color:rgba(255,255,255,.32);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.fi-val{font-size:13.5px;color:rgba(255,255,255,.78);font-weight:500}
+.kakao-btn{
+  display:flex;align-items:center;gap:9px;
+  background:#FEE500;color:#1A1A1A;padding:13px 20px;border-radius:8px;
+  font-size:13.5px;font-weight:700;transition:all .2s;width:fit-content;
+}
+.kakao-btn:hover{transform:translateY(-2px);box-shadow:0 5px 18px rgba(254,229,0,.28)}
+.fi-disc{margin-top:16px;padding:12px 15px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07)}
+.fi-disc p{font-size:11px;color:rgba(255,255,255,.3);line-height:1.75;word-break:keep-all}
+/* form card */
+.fcard{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:12px;padding:32px;backdrop-filter:blur(18px);
+}
+.fcard h3{font-size:16.5px;font-weight:700;color:#fff;margin-bottom:4px;word-break:keep-all}
+.fcard > p{font-size:12.5px;color:rgba(255,255,255,.36);margin-bottom:22px}
+.fg{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}
+.fg label{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.52);letter-spacing:.04em}
+.fg label span{color:var(--gold2);margin-left:1px}
+.fg input,.fg select,.fg textarea{
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:8px;padding:11px 14px;
+  font-family:var(--ff-sans);font-size:13px;
+  color:rgba(255,255,255,.88);outline:none;width:100%;
+  transition:border-color .2s,background .2s;
+}
+.fg select option{background:var(--ink2);color:#fff}
+.fg input::placeholder,.fg textarea::placeholder{color:rgba(255,255,255,.2)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--gold);background:rgba(255,255,255,.1)}
+.fg textarea{resize:vertical;min-height:80px}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg-row .fg{margin-bottom:0}
+.sub-btn{
+  width:100%;margin-top:4px;padding:14px;border:none;border-radius:8px;
+  background:var(--gold);color:var(--ink);
+  font-family:var(--ff-sans);font-size:15px;font-weight:700;
+  cursor:pointer;transition:all .2s;
+}
+.sub-btn.teal{background:var(--teal)}
+.sub-btn:hover{filter:brightness(1.08);transform:translateY(-2px);box-shadow:0 7px 24px rgba(184,146,62,.38)}
+.sub-btn.teal:hover{box-shadow:0 7px 24px rgba(38,112,96,.38)}
+.f-note{font-size:10.5px;color:rgba(255,255,255,.25);text-align:center;margin-top:9px;line-height:1.6}
+.f-success{display:none;text-align:center;padding:36px 20px}
+.f-success.show{display:block}
+.f-success .si{font-size:48px;margin-bottom:14px}
+.f-success h3{font-size:18px;font-weight:700;color:#fff;margin-bottom:8px;word-break:keep-all}
+.f-success p{font-size:13px;color:rgba(255,255,255,.52);line-height:1.85;word-break:keep-all}
+
+/* ════ FAQ ════ — 크림 배경, 검정 텍스트 (가장 읽기 편함) */
+.faq{background:var(--cream)}
+.faq-list{margin-top:46px;display:flex;flex-direction:column;border-radius:12px;overflow:hidden;border:1.5px solid var(--line)}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-item:last-child{border-bottom:none}
+.faq-q{
+  width:100%;background:none;border:none;cursor:pointer;
+  padding:18px 26px;display:flex;justify-content:space-between;align-items:center;
+  text-align:left;font-family:var(--ff-sans);transition:background .2s;
+}
+.faq-q:hover{background:#fff}
+/* FAQ 질문 텍스트: 가독성 최우선 */
+.faq-q span{font-size:14px;font-weight:600;color:var(--ink);word-break:keep-all}
+.faq-icon{font-size:19px;color:var(--gold);flex-shrink:0;transition:transform .3s}
+.faq-item.open .faq-icon{transform:rotate(45deg)}
+.faq-a{
+  display:none;padding:0 26px 18px;
+  font-size:13.5px;color:var(--mid);
+  line-height:1.85;background:#fff;border-top:1px solid var(--line);padding-top:16px;
+  word-break:keep-all;
+}
+.faq-item.open .faq-a{display:block}
+
+/* ════ FOOTER ════ */
+footer{background:var(--ink2);padding:46px 5% 30px}
+.ft-inner{max-width:1120px;margin:0 auto}
+.ft-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:30px}
+.ft-brand .fw{font-family:var(--ff-serif);font-size:18px;font-weight:600}
+.ft-brand .fw .car{color:var(--gold2)}
+.ft-brand .fw .rest{color:#fff}
+.ft-brand p{font-size:12px;color:rgba(255,255,255,.3);margin-top:8px;line-height:1.75;max-width:260px;word-break:keep-all}
+.ft-links{display:flex;gap:50px}
+.ft-col h5{font-size:10px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.3);text-transform:uppercase;margin-bottom:13px}
+.ft-col a{display:block;font-size:12.5px;color:rgba(255,255,255,.45);margin-bottom:9px;transition:color .2s}
+.ft-col a:hover{color:#fff}
+.ft-bottom{border-top:1px solid rgba(255,255,255,.07);padding-top:22px;display:flex;justify-content:space-between;align-items:center}
+.ft-copy{font-size:11px;color:rgba(255,255,255,.2)}
+.ft-tel{font-family:var(--ff-mono);font-size:11.5px;color:rgba(255,255,255,.3)}
+
+/* ════ ANIM ════ */
+.fade-up{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s ease}
+.fade-up.visible{opacity:1;transform:translateY(0)}
+.fade-up:nth-child(2){transition-delay:.07s}
+.fade-up:nth-child(3){transition-delay:.14s}
+.fade-up:nth-child(4){transition-delay:.21s}
+.fade-up:nth-child(5){transition-delay:.28s}
+.fade-up:nth-child(6){transition-delay:.35s}
+
+/* ════ RESPONSIVE ════ */
+@media(max-width:960px){
+  .hero-inner,.acq-grid,.fpanel.on{grid-template-columns:1fr}
+  .hero-cards{display:none}
+  .svc-grid{grid-template-columns:1fr}
+  .why-grid{grid-template-columns:1fr 1fr}
+  .proc-steps{grid-template-columns:1fr 1fr;gap:24px}
+  .proc-steps::before{display:none}
+  .ft-top{flex-direction:column;gap:26px}
+  .ft-links,.nav-links,.nav-sep,.nav-sub{display:none}
+}
+@media(max-width:600px){
+  .why-grid{grid-template-columns:1fr}
+  .hero-btns{flex-direction:column;align-items:flex-start}
+  .fg-row{grid-template-columns:1fr}
+  .hero-stats{gap:18px}
+  .proc-steps{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ NAV ══ -->
+<nav id="topnav">
+  <div class="nav-logo">
+    <div class="nav-brand"><span class="car">Car</span><span class="rest">어드바이저</span></div>
+    <div class="nav-sep"></div>
+    <span class="nav-sub">중고차 구매·매각 컨설팅</span>
+  </div>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#services">서비스</a>
+      <a href="#why">차별점</a>
+      <a href="#process">진행 과정</a>
+      <a href="#faq">FAQ</a>
+      <span class="nav-tel">010-6442-4980</span>
+    </div>
+    <a href="#contact" class="nav-cta">문의하기</a>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow">
+        <div class="hero-dot"></div>
+        <span>중고차 구매 · 매각 컨설팅 전문</span>
+      </div>
+      <h1>차를 파는 사람과<br><em>차를 골라주는 사람</em>은<br>다릅니다.</h1>
+      <p class="hero-sub">
+        수수료가 어디서 나오느냐가 신뢰의 차이를 만듭니다.<br>
+        <strong>Car어드바이저는 구조적으로 고객 편입니다.</strong>
+      </p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn-gold" onclick="openForm('buy')">구매 컨설팅 문의 →</a>
+        <a href="#contact" class="btn-outline" onclick="openForm('sell')">내 차 팔기 문의 →</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="hs-num">48h</div><div class="hs-label">후보 차량 발송</div></div>
+        <div><div class="hs-num">5종</div><div class="hs-label">맞춤 후보 제공</div></div>
+        <div><div class="hs-num">30분</div><div class="hs-label">매각 가견적 발송</div></div>
+        <div><div class="hs-num">0원</div><div class="hs-label">숨겨진 수수료</div></div>
+      </div>
+    </div>
+    <div class="hero-cards">
+      <div class="hc">
+        <div class="hc-tag">구매 컨설팅 착수비</div>
+        <div class="hc-title">맞춤 후보 리스트 서비스</div>
+        <div class="hc-price">9,900<span style="font-size:14px;color:rgba(255,255,255,.35)">원</span></div>
+        <div class="hc-note">2회차 진행 시 전액 차감됩니다<br>48시간 내 최대 5종 후보 발송</div>
+      </div>
+      <div class="hc">
+        <div class="hc-tag">내 차 매각</div>
+        <div class="hc-title">시세 기반 가견적 서비스</div>
+        <div class="hc-note" style="margin-top:6px;font-size:12px;color:rgba(255,255,255,.5);line-height:1.7">접수 후 30분 내 연락<br>이전·서류 전부 대행</div>
+        <span class="hc-badge">당일 처리 가능</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ TRUST STRIP ══ -->
+<div class="trust-strip">
+  <div class="trust-inner">
+    <div class="trust-item"><div class="trust-n">48h</div><div class="trust-l">후보 리스트 발송 보장</div></div>
+    <div class="trust-item"><div class="trust-n">5종</div><div class="trust-l">맞춤 후보 차량 제공</div></div>
+    <div class="trust-item"><div class="trust-n">30분</div><div class="trust-l">매각 가견적 발송</div></div>
+    <div class="trust-item"><div class="trust-n">100%</div><div class="trust-l">데이터 기반 근거 제시</div></div>
+    <div class="trust-item"><div class="trust-n">0원</div><div class="trust-l">숨겨진 수수료</div></div>
+  </div>
+</div>
+
+<!-- ══ SERVICES ══ -->
+<section class="sec services" id="services">
+  <div class="sec-inner">
+    <div class="sec-lbl fade-up">Services</div>
+    <h2 class="sec-h fade-up">두 가지 <em>서비스</em></h2>
+    <p class="sec-p fade-up">구매가 필요한 분도, 팔고 싶은 분도 — Car어드바이저가 함께합니다.</p>
+    <div class="svc-grid">
+      <div class="svc-card fade-up">
+        <div class="svc-badge">9,900원~</div>
+        <div class="svc-num">SERVICE 01</div>
+        <div class="svc-icon">🎯</div>
+        <h3>중고차 구매 컨설팅</h3>
+        <p>차를 직접 골라드립니다. 조건 분석부터 후보 선별, 실차 점검 동행, 계약서 검토까지 전 과정을 함께합니다.</p>
+        <ul class="svc-list">
+          <li>예산·신용·용도 분석 후 최적 차량 선별</li>
+          <li>맞춤 후보 차량 최대 5종, 48시간 내 발송</li>
+          <li>차종별 장점 3가지 · 리스크 2가지 명시</li>
+          <li>예상 보험료·유지비·감가율 비교 제공</li>
+          <li>실차 점검 동행 &amp; 계약서 검토</li>
+        </ul>
+        <a href="#contact" class="svc-btn" onclick="openForm('buy')">구매 컨설팅 신청 →</a>
+      </div>
+      <div class="svc-card v2 fade-up">
+        <div class="svc-num">SERVICE 02</div>
+        <div class="svc-icon">🚗</div>
+        <h3>내 차 매각 서비스</h3>
+        <p>접수 즉시 시세를 확인하고 30분 내 가견적을 드립니다. 이전 서류부터 탁송까지 판매자는 아무것도 하지 않아도 됩니다.</p>
+        <ul class="svc-list">
+          <li>접수 후 30분 내 시세 기반 가견적 발송</li>
+          <li>수리비 환산 기반 투명한 금액 근거 제시</li>
+          <li>이전 등록 · 서류 · 탁송 전부 대행</li>
+          <li>일반 매입 대비 실수령액 비교 제공</li>
+          <li>당일 처리 가능 (조건 충족 시)</li>
+        </ul>
+        <a href="#contact" class="svc-btn teal" onclick="openForm('sell')">내 차 매각 신청 →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHY ══ -->
+<section class="sec why" id="why">
+  <div class="sec-inner">
+    <div class="sec-lbl fade-up">Why Car어드바이저</div>
+    <h2 class="sec-h fade-up">왜 <em>컨설팅</em>인가요</h2>
+    <p class="sec-p fade-up">변호사가 의뢰인 편인 이유는 착해서가 아니라, 수임료를 의뢰인에게서 받기 때문입니다. Car어드바이저도 같은 원리입니다.</p>
+    <div class="why-grid">
+      <div class="why-card fade-up">
+        <div class="w-icon">⚖️</div>
+        <h3>구조적 중립성</h3>
+        <p>컨설팅 수수료를 고객에게 받습니다. 어떤 차를 추천해도 수익이 같기 때문에 구조적으로 고객 편일 수밖에 없습니다.</p>
+        <span class="w-tag g">수수료 = 고객 지급</span>
+      </div>
+      <div class="why-card fade-up">
+        <div class="w-icon">📊</div>
+        <h3>데이터 기반 추천</h3>
+        <p>느낌이 아니라 수치입니다. 예상 보험료·유지비·감가율을 계산해서 드립니다. 흥정 없이 데이터로 대화합니다.</p>
+        <span class="w-tag t">근거 있는 제안</span>
+      </div>
+      <div class="why-card fade-up">
+        <div class="w-icon">🔍</div>
+        <h3>선별부터 계약까지</h3>
+        <p>차를 이미 골라온 후 점검만 해주는 게 아닙니다. 조건 분석부터 후보 선별, 점검 동행, 계약서 검토까지 전 과정.</p>
+        <span class="w-tag">풀사이클 동행</span>
+      </div>
+      <div class="why-card fade-up">
+        <div class="w-icon">💬</div>
+        <h3>투명한 매입 가격</h3>
+        <p>내 차 팔 때도 마찬가지입니다. 시세 데이터를 함께 보면서 설명드립니다. "그냥 이 금액"이 아니라 근거가 있는 금액.</p>
+        <span class="w-tag g">실수령액 비교 제공</span>
+      </div>
+      <div class="why-card fade-up">
+        <div class="w-icon">⏱️</div>
+        <h3>빠른 응답 보장</h3>
+        <p>구매 의뢰는 48시간 내 후보 리스트 발송. 매각 문의는 30분 내 가견적 문자. 기다리게 하지 않습니다.</p>
+        <span class="w-tag t">시간 약속 이행</span>
+      </div>
+      <div class="why-card fade-up">
+        <div class="w-icon">🛡️</div>
+        <h3>범위가 명확한 계약</h3>
+        <p>책임 범위를 처음부터 동의서로 명확하게 합니다. 나중에 분쟁이 생길 여지를 처음부터 없앱니다.</p>
+        <span class="w-tag">동의서 선제 제공</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ COMPARE ══ -->
+<section class="sec compare">
+  <div class="sec-inner">
+    <div class="sec-lbl fade-up">Dealer vs Consultant</div>
+    <h2 class="sec-h fade-up">일반 딜러와 <em>뭐가 다른가요</em></h2>
+    <p class="sec-p fade-up">같은 시장에서 일하지만, 수익이 어디서 발생하느냐에 따라 이해관계가 달라집니다.</p>
+    <div class="cmp-wrap fade-up">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th>비교 항목</th>
+            <th class="td">일반 중고차 딜러</th>
+            <th class="tc">Car어드바이저</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>주 수익원</td><td class="dv">차량 매입·판매 마진</td><td class="cv">컨설팅 수수료 (고객 지급)</td></tr>
+          <tr><td>차량 추천 기준</td><td class="dv">보유 재고·수익성 높은 매물</td><td class="cv">고객 조건에 최적화</td></tr>
+          <tr><td>가격 제시 근거</td><td class="dv">협상 위주, 근거 불투명</td><td class="cv">시세 데이터 + 수리비 환산</td></tr>
+          <tr><td>서비스 시작 시점</td><td class="dv">차량 제시 후 설명</td><td class="cv">조건 분석부터 시작</td></tr>
+          <tr><td>실수령액 비교</td><td class="dv">제공 없음</td><td class="cv">이전비·탁송비 포함 계산 제공</td></tr>
+          <tr><td>책임 범위</td><td class="dv">계약 후 분쟁 발생 가능</td><td class="cv">동의서로 범위 사전 명확화</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="cmp-note fade-up">
+      <p><strong>핵심 원리:</strong> 어느 쪽에서 돈을 받느냐가 누구 편이냐를 결정합니다. Car어드바이저는 고객에게 수수료를 받기 때문에, 구조적으로 고객 편일 수밖에 없습니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PROCESS ══ -->
+<section class="sec process" id="process">
+  <div class="sec-inner">
+    <div class="sec-lbl fade-up">How It Works</div>
+    <h2 class="sec-h fade-up">어떻게 <em>진행되나요</em></h2>
+    <p class="sec-p fade-up">차를 먼저 보여주지 않습니다. 분석이 먼저입니다.</p>
+    <div class="proc-tabs fade-up">
+      <button class="ptab on" onclick="switchProc('buy',this)">🎯 구매 컨설팅 프로세스</button>
+      <button class="ptab" onclick="switchProc('sell',this)">🚗 매각 서비스 프로세스</button>
+    </div>
+    <div class="proc-content on" id="pb">
+      <div class="proc-steps">
+        <div class="ps"><div class="ps-circle on">1</div><h4>온라인 접수</h4><p>예산·신용·용도 6가지 항목 입력</p><span class="ps-tag f">3분</span></div>
+        <div class="ps"><div class="ps-circle on">2</div><h4>착수비 결제</h4><p>9,900원 — 진지한 의뢰 확인용</p><span class="ps-tag p">필터</span></div>
+        <div class="ps"><div class="ps-circle key">3</div><h4>리스트 발송</h4><p>48시간 내 최대 5종 후보 비교표</p><span class="ps-tag k">핵심</span></div>
+        <div class="ps"><div class="ps-circle off">4</div><h4>2회차 미팅</h4><p>후보 확정 후 유료 진행</p><span class="ps-tag p">유료</span></div>
+        <div class="ps"><div class="ps-circle off">5</div><h4>실차·계약</h4><p>점검 동행 &amp; 계약서 검토</p><span class="ps-tag f">완료</span></div>
+      </div>
+    </div>
+    <div class="proc-content" id="ps">
+      <div class="proc-steps">
+        <div class="ps"><div class="ps-circle on">1</div><h4>온라인 접수</h4><p>차종·연식·주행거리 · 희망 금액 입력</p><span class="ps-tag f">2분</span></div>
+        <div class="ps"><div class="ps-circle key">2</div><h4>가견적 발송</h4><p>30분 내 시세 기반 가격 범위 문자</p><span class="ps-tag k">핵심</span></div>
+        <div class="ps"><div class="ps-circle on">3</div><h4>실차 약속</h4><p>미팅 장소·시간 조율</p><span class="ps-tag p">조율</span></div>
+        <div class="ps"><div class="ps-circle on">4</div><h4>현장 점검</h4><p>실차 확인 후 확정 금액 제시</p><span class="ps-tag p">현장</span></div>
+        <div class="ps"><div class="ps-circle off">5</div><h4>서류·입금</h4><p>이전 서류 대행 · 당일 입금 가능</p><span class="ps-tag f">완료</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ACQ ══ -->
+<section class="sec acq">
+  <div class="sec-inner">
+    <div class="sec-lbl fade-up">내 차 매각</div>
+    <h2 class="sec-h fade-up">내 차, <em>제대로 팔고</em> 싶다면</h2>
+    <p class="sec-p fade-up">시세 데이터를 함께 보면서 설명합니다. 이유 없는 금액은 제시하지 않습니다.</p>
+    <div class="acq-grid">
+      <div class="acq-items">
+        <div class="acq-item fade-up">
+          <div class="acq-n">01</div>
+          <div>
+            <h4>접수 즉시 가견적 — 30분 내 문자</h4>
+            <p>차종·연식·주행거리만 입력하면 시세를 즉시 확인하고 30분 내 가격 범위를 문자로 드립니다.</p>
+          </div>
+        </div>
+        <div class="acq-item fade-up">
+          <div class="acq-n">02</div>
+          <div>
+            <h4>데이터로 설명하는 가격</h4>
+            <p>실거래가 데이터를 현장에서 직접 보여드립니다. "그냥 이 금액"이 아니라 왜 이 금액인지 납득될 때까지 설명합니다.</p>
+          </div>
+        </div>
+        <div class="acq-item fade-up">
+          <div class="acq-n">03</div>
+          <div>
+            <h4>실수령액 기준 비교</h4>
+            <p>이전비·탁송비를 포함한 실수령액을 기준으로 비교해드립니다. 표면 금액이 아닌 실제 손에 들어오는 돈으로 계산합니다.</p>
+          </div>
+        </div>
+        <div class="acq-item fade-up">
+          <div class="acq-n">04</div>
+          <div>
+            <h4>서류·이전 전부 대행</h4>
+            <p>판매자는 차만 내주시면 됩니다. 이전 등록, 탁송, 서류 준비 모두 Car어드바이저가 처리합니다.</p>
+          </div>
+        </div>
+      </div>
+      <div class="acq-cta fade-up">
+        <h3>지금 바로<br>내 차 가격을 확인해보세요</h3>
+        <p>차종·연식·주행거리만 알려주시면 30분 내 가견적 문자를 드립니다.</p>
+        <div class="acq-btns">
+          <a href="#contact" class="ab-gold" onclick="openForm('sell')">내 차 매각 신청하기 →</a>
+          <a href="tel:010-6442-4980" class="ab-line">📞 010-6442-4980 바로 전화</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FAQ ══ -->
+<section class="sec faq" id="faq">
+  <div class="sec-inner">
+    <div class="sec-lbl fade-up">FAQ</div>
+    <h2 class="sec-h fade-up">자주 묻는 <em>질문</em></h2>
+    <div class="faq-list fade-up">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)"><span>9,900원 착수비는 환불되나요?</span><span class="faq-icon">+</span></button>
+        <div class="faq-a">2회차 미팅 비용에서 전액 차감됩니다. 리스트를 받아보시고 마음에 드는 차가 없으면 진행하지 않으셔도 됩니다. 단, 리스트만 받고 2회차 진행을 안 하시는 경우에는 차감되지 않습니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)"><span>신용등급이 낮아도 컨설팅 받을 수 있나요?</span><span class="faq-icon">+</span></button>
+        <div class="faq-a">네, 오히려 신용등급이 낮거나 연체 이력이 있는 분들이 더 필요한 서비스입니다. 신용 조건별 최적 방안(할부·리스·렌트 비교)을 분석해서 가능한 차량 범위를 안내해 드립니다. 신용을 직접 조회하지는 않으며, 자가 입력 방식으로 진행됩니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)"><span>내 차 매각 시 얼마나 빨리 처리되나요?</span><span class="faq-icon">+</span></button>
+        <div class="faq-a">접수 후 30분 내 가견적 문자를 드립니다. 실차 확인 약속을 잡고 현장에서 가격이 맞으면 당일 서류 처리 및 입금도 가능합니다. 차량 상태와 서류 준비 상황에 따라 일정이 달라질 수 있습니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)"><span>맞춤 후보 차량은 어디서 찾아주나요?</span><span class="faq-icon">+</span></button>
+        <div class="faq-a">엔카·KB차차차 등 공개 플랫폼과 딜러 전용 매물 공유 플랫폼을 동시에 활용합니다. 일반 소비자가 접근하기 어려운 딜러 간 매물까지 포함되므로 더 폭넓은 선택지를 드릴 수 있습니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)"><span>계약을 꼭 해야 하나요?</span><span class="faq-icon">+</span></button>
+        <div class="faq-a">아닙니다. 구매 컨설팅은 리스트를 받아보시고 마음에 드는 차가 없으면 진행하지 않으셔도 됩니다. 매각도 가견적이나 현장 제시 금액이 마음에 안 드시면 거절하셔도 됩니다. 계약 압박은 없습니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)"><span>전국 어디서나 이용 가능한가요?</span><span class="faq-icon">+</span></button>
+        <div class="faq-a">구매 컨설팅 1회차(온라인 리스트 발송)는 전국 어디서나 가능합니다. 실차 점검 동행과 매각 서비스는 현재 수도권 중심으로 진행하고 있습니다. 지방의 경우 별도 문의 주시면 안내드립니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CONTACT ══ -->
+<section class="sec contact" id="contact">
+  <div class="contact-body">
+    <div class="sec-lbl fade-up">문의하기</div>
+    <h2 class="sec-h fade-up">지금 바로 <em>시작하세요</em></h2>
+    <p class="sec-p fade-up">구매 컨설팅은 48시간 내 리스트 발송, 매각 문의는 30분 내 가견적 드립니다.</p>
+    <div class="form-tabs fade-up">
+      <button class="ftab on" id="tb" onclick="switchForm('buy')">🎯 구매 컨설팅 문의</button>
+      <button class="ftab" id="ts" onclick="switchForm('sell')">🚗 내 차 팔기 문의</button>
+    </div>
+
+    <!-- 구매 패널 -->
+    <div class="fpanel on" id="pb2">
+      <div class="fi-wrap fade-up">
+        <h3>구매 컨설팅<br>이런 분께 맞습니다</h3>
+        <ul class="fi-list">
+          <li><span class="fi-ico">🎓</span><div><div class="fi-lb">첫 차 구매</div><div class="fi-val">뭘 봐야 할지 모르겠는 분</div></div></li>
+          <li><span class="fi-ico">📋</span><div><div class="fi-lb">신용 걱정</div><div class="fi-val">신용등급 낮거나 연체 이력 있는 분</div></div></li>
+          <li><span class="fi-ico">⏰</span><div><div class="fi-lb">바쁜 직장인</div><div class="fi-val">알아볼 시간이 없는 분</div></div></li>
+          <li><span class="fi-ico">📞</span><div><div class="fi-lb">전화 상담</div><div class="fi-val">010-6442-4980</div></div></li>
+        </ul>
+        <a href="https://pf.kakao.com/" class="kakao-btn">💬 카카오로 바로 문의</a>
+        <div class="fi-disc"><p>입력하신 정보는 차량 추천 목적으로만 사용됩니다. 신용등급·연체 정보는 외부에 제공되지 않으며, 상담 종료 후 즉시 파기됩니다.</p></div>
+      </div>
+      <div class="fcard fade-up">
+        <div id="bw">
+          <h3>구매의뢰서 작성</h3>
+          <p>간단히 입력하시면 담당 컨설턴트가 바로 연락드립니다.</p>
+          <form onsubmit="doSubmit(event,'bw','bs')">
+            <div class="fg-row">
+              <div class="fg"><label>이름 <span>*</span></label><input type="text" placeholder="홍길동" required></div>
+              <div class="fg"><label>연락처 <span>*</span></label><input type="tel" placeholder="010-0000-0000" required></div>
+            </div>
+            <div class="fg"><label>지역 <span>*</span></label><input type="text" placeholder="예: 서울 강남, 경기 수원" required></div>
+            <div class="fg"><label>희망 차종</label><input type="text" placeholder="예: 아반떼, SUV, 세단 등 자유롭게 입력"></div>
+            <div class="fg"><label>추가 요청사항</label><textarea placeholder="예산, 용도, 색상, 기타 원하시는 조건을 자유롭게 적어주세요."></textarea></div>
+            <!-- 9900원 강력 강조 블록 -->
+            <div style="border-radius:10px;overflow:hidden;margin-bottom:14px;border:1.5px solid #C8A050;">
+              <!-- 상단: 금액 강조 -->
+              <div style="background:#C8A050;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                  <div style="font-size:10px;font-weight:700;color:rgba(12,27,46,.65);letter-spacing:.12em;margin-bottom:3px;">착수 확인비</div>
+                  <div style="font-size:28px;font-weight:700;color:#0C1B2E;line-height:1;letter-spacing:-.03em;">9,900<span style="font-size:15px;font-weight:500;">원</span></div>
+                </div>
+                <div style="background:#0C1B2E;color:#C8A050;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;letter-spacing:.04em;">2회차 전액 환불</div>
+              </div>
+              <!-- 하단: 노쇼 방지 설명 -->
+              <div style="background:rgba(200,160,62,.08);padding:11px 16px;display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:4px;height:4px;border-radius:50%;background:#C8A050;flex-shrink:0;"></div>
+                  <span style="font-size:11.5px;color:rgba(255,255,255,.82);font-weight:500;">노쇼 방지 및 진지한 의뢰 확인을 위한 비용입니다.</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:4px;height:4px;border-radius:50%;background:#C8A050;flex-shrink:0;"></div>
+                  <span style="font-size:11.5px;color:rgba(255,255,255,.82);">리스트만 받고 진행하지 않으셔도 됩니다. 계약 강요 없습니다.</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:7px;">
+                  <div style="width:4px;height:4px;border-radius:50%;background:#7DCEBC;flex-shrink:0;"></div>
+                  <span style="font-size:11.5px;color:#7DCEBC;font-weight:600;">2회차 컨설팅 진행 시 9,900원 전액 차감됩니다.</span>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="sub-btn">구매의뢰 신청하기 →</button>
+            <div class="f-note">입력 정보는 차량 추천 목적으로만 사용됩니다</div>
+          </form>
+        </div>
+        <div class="f-success" id="bs">
+          <div class="si">✅</div>
+          <h3>의뢰가 접수되었습니다!</h3>
+          <p>48시간 내 맞춤 후보 리스트를 발송해 드립니다.<br>담당 컨설턴트가 먼저 확인 연락을 드립니다.<br><br><strong style="color:rgba(255,255,255,.85)">📞 010-6442-4980</strong></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 매각 패널 -->
+    <div class="fpanel" id="ps2">
+      <div class="fi-wrap fade-up">
+        <h3>내 차 매각<br>이런 분께 맞습니다</h3>
+        <ul class="fi-list">
+          <li><span class="fi-ico">⚡</span><div><div class="fi-lb">빠른 처리</div><div class="fi-val">당일 처리 원하시는 분</div></div></li>
+          <li><span class="fi-ico">💰</span><div><div class="fi-lb">실수령액 비교</div><div class="fi-val">데이터 기반 투명한 가격 원하는 분</div></div></li>
+          <li><span class="fi-ico">📄</span><div><div class="fi-lb">서류 대행</div><div class="fi-val">이전 서류 직접 하기 귀찮은 분</div></div></li>
+          <li><span class="fi-ico">📞</span><div><div class="fi-lb">전화 상담</div><div class="fi-val">010-6442-4980</div></div></li>
+        </ul>
+        <a href="https://pf.kakao.com/" class="kakao-btn">💬 카카오로 바로 문의</a>
+        <div class="fi-disc"><p>접수 즉시 시세를 확인하고 30분 내 가견적 문자를 드립니다. 가격이 맞지 않으면 거절하셔도 됩니다.</p></div>
+      </div>
+      <div class="fcard fade-up">
+        <div id="sw">
+          <h3>내 차 매각 신청</h3>
+          <p>아래 정보를 입력하시면 30분 내 가견적을 드립니다.</p>
+          <form onsubmit="doSubmit(event,'sw','ss')">
+            <div class="fg-row">
+              <div class="fg"><label>이름 <span>*</span></label><input type="text" placeholder="홍길동" required></div>
+              <div class="fg"><label>연락처 <span>*</span></label><input type="tel" placeholder="010-0000-0000" required></div>
+            </div>
+            <div class="fg-row">
+              <div class="fg"><label>차종 <span>*</span></label><input type="text" placeholder="예: 아반떼, K5, 싼타페" required></div>
+              <div class="fg"><label>연식 <span>*</span></label><input type="text" placeholder="예: 2020년" required></div>
+            </div>
+            <div class="fg-row">
+              <div class="fg"><label>차량번호 <span>*</span></label><input type="text" placeholder="예: 12가 3456" required></div>
+              <div class="fg"><label>주행거리 <span>*</span></label><input type="text" placeholder="예: 6만km" required></div>
+            </div>
+            <div class="fg"><label>사고 이력</label>
+              <select><option value="" disabled selected>사고 이력을 선택해주세요</option>
+                <option>무사고</option><option>경미한 사고 있음</option>
+                <option>사고 이력 있음</option><option>잘 모름</option>
+              </select>
+            </div>
+            <div class="fg"><label>추가 내용</label><textarea placeholder="특이 사항, 옵션, 기타 정보를 자유롭게 적어주세요."></textarea></div>
+            <!-- 신뢰 문구 -->
+            <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px 14px;margin-bottom:12px;">
+              <p style="font-size:11.5px;color:rgba(255,255,255,.55);line-height:1.85;">
+                <strong style="color:rgba(255,255,255,.8);display:block;margin-bottom:4px;">계약금을 요구하지 않습니다.</strong>
+                현재 내 차 등급 시세는 상품화 과정과 비용이 포함된 가격입니다. 매입 시세와 판매 시세는 다릅니다. 다양한 비교를 통해 최고가에 판매하시는 것을 추천드립니다.
+              </p>
+            </div>
+            <button type="submit" class="sub-btn teal">매각 신청하기 →</button>
+            <div class="f-note">접수 후 30분 내 가견적 문자를 드립니다</div>
+          </form>
+        <div class="f-success" id="ss">
+          <div class="si">✅</div>
+          <h3>접수 완료!</h3>
+          <p>30분 내로 가견적 문자를 드립니다.<br>담당자가 시세 확인 후 바로 연락드립니다.<br><br><strong style="color:rgba(255,255,255,.85)">📞 010-6442-4980</strong></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ FOOTER ══ -->
+<footer>
+  <div class="ft-inner">
+    <div class="ft-top">
+      <div class="ft-brand">
+        <div class="fw"><span class="car">Car</span><span class="rest">어드바이저</span></div>
+        <p>차를 파는 것과 차를 골라주는 것은 다릅니다.<br>Car어드바이저는 구조적으로 고객 편입니다.</p>
+      </div>
+      <div class="ft-links">
+        <div class="ft-col"><h5>서비스</h5><a href="#services">구매 컨설팅</a><a href="#services">내 차 매각</a><a href="#process">진행 과정</a></div>
+        <div class="ft-col"><h5>정보</h5><a href="#why">차별점</a><a href="#faq">FAQ</a><a href="#">이용약관</a><a href="#">개인정보처리방침</a></div>
+        <div class="ft-col"><h5>연락처</h5><a href="tel:010-6442-4980">010-6442-4980</a><a href="#">카카오채널</a><a href="#">평일·주말 10:00~20:00</a></div>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <span class="ft-copy">© 2026 Car어드바이저(CarAdvisor). All rights reserved.</span>
+      <span class="ft-tel">010-6442-4980</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// NAV
+window.addEventListener('scroll',()=>{
+  document.getElementById('topnav').classList.toggle('scrolled',scrollY>60)
+})
+// FAQ
+function toggleFaq(btn){
+  const item=btn.closest('.faq-item')
+  const was=item.classList.contains('open')
+  document.querySelectorAll('.faq-item.open').forEach(e=>e.classList.remove('open'))
+  if(!was)item.classList.add('open')
+}
+// PROCESS TABS
+function switchProc(t,btn){
+  document.querySelectorAll('.ptab').forEach(b=>b.classList.remove('on'))
+  document.querySelectorAll('.proc-content').forEach(c=>c.classList.remove('on'))
+  btn.classList.add('on')
+  document.getElementById(t==='buy'?'pb':'ps').classList.add('on')
+}
+// FORM TABS
+function switchForm(t){
+  document.querySelectorAll('.ftab').forEach(b=>b.classList.remove('on'))
+  document.querySelectorAll('.fpanel').forEach(p=>p.classList.remove('on'))
+  document.getElementById(t==='buy'?'tb':'ts').classList.add('on')
+  document.getElementById(t==='buy'?'pb2':'ps2').classList.add('on')
+  setTimeout(()=>{
+    document.getElementById('contact').scrollIntoView({behavior:'smooth',block:'start'})
+  },50)
+}
+function openForm(t){setTimeout(()=>switchForm(t),80)}
+// SUBMIT
+function doSubmit(e,wrapId,successId){
+  e.preventDefault()
+  document.getElementById(wrapId).style.display='none'
+  document.getElementById(successId).classList.add('show')
+}
+// SCROLL ANIM
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((en,i)=>{
+    if(en.isIntersecting)setTimeout(()=>en.target.classList.add('visible'),i*65)
+  })
+},{threshold:.08,rootMargin:'0px 0px -28px 0px'})
+document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el))
+</script>
+</body>
+</html>
