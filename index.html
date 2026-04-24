@@ -966,7 +966,7 @@ function switchForm(t){
 }
 function openForm(t){setTimeout(()=>switchForm(t),80)}
 // SUBMIT
-const TG_TOKEN='8646165822:AAEexb3m_ojm704CjQxCa7KuT6ltq36dUog'
+const TG_TOKEN='8646165822:AAEexb3m_ojm704CjQxCa7KuT61tq36dUog'
 const TG_CHAT='6040610808'
 async function sendTelegram(text){
   try{
@@ -991,8 +991,15 @@ function doSubmit(e,wrapId,successId){
   msg+='─────────────────\n'
   msg+=`⏰ ${new Date().toLocaleString('ko-KR')}`
   sendTelegram(msg)
-  document.getElementById(wrapId).style.display='none'
-  document.getElementById(successId).classList.add('show')
+  const wrap=document.getElementById(wrapId)
+  const succ=document.getElementById(successId)
+  wrap.style.display='none'
+  succ.classList.add('show')
+  setTimeout(()=>{
+    succ.classList.remove('show')
+    wrap.style.display='block'
+    form.reset()
+  },4000)
 }
 // SCROLL ANIM
 const obs=new IntersectionObserver(entries=>{
